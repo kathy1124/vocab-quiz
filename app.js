@@ -41,7 +41,7 @@ let quizState = {
     questions: [],
     currentIdx: 0,
     score: 0,
-    maxQuestions: 10
+    maxQuestions: 20
 };
 
 // Initialize App
