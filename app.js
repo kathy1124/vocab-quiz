@@ -243,7 +243,7 @@ retryBtn.addEventListener('click', () => {
 
 function startQuiz() {
     // Generate questions
-    const totalQ = Math.min(vocabulary.length, 10); // Max 10 questions
+    const totalQ = Math.min(vocabulary.length, 20); // Max 20 questions
     quizState.maxQuestions = totalQ;
     quizState.currentIdx = 0;
     quizState.score = 0;
