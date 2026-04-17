@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina Vocab | 質感單字測驗</title>
+    <meta name="description" content="A beautiful and modern vocabulary learning application.">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="container">
+        <header class="app-header">
+            <h1><i class="fa-solid fa-language"></i> Lumina Vocab</h1>
+            <p>打造您的專屬字庫，隨時驗收學習成果</p>
+        </header>
+
+        <main class="dashboard">
+            <!-- Left Column: Manage Vocabulary -->
+            <section class="card manage-section">
+                <div class="card-header flex-header">
+                    <h2><i class="fa-solid fa-plus-circle"></i> 新增單字</h2>
+                    <div class="add-mode-tabs">
+                        <button id="tab-single" class="tab-btn active">單筆新增</button>
+                        <button id="tab-batch" class="tab-btn">批次匯入</button>
+                    </div>
+                </div>
+
+                <!-- Single Add Form -->
+                <form id="add-word-form" class="add-form">
+                    <div class="input-group">
+                        <label for="english">英文單字</label>
+                        <input type="text" id="english" placeholder="例如: Apple" required autocomplete="off">
+                    </div>
+                    <div class="input-group">
+                        <label for="chinese">中文解釋</label>
+                        <input type="text" id="chinese" placeholder="例如: 蘋果" required autocomplete="off">
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <span>加入字庫</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    <div id="add-success-msg" class="success-msg hidden">新增成功！</div>
+                </form>
+
+                <!-- Batch Add Form -->
+                <form id="batch-word-form" class="add-form hidden">
+                    <div class="input-group">
+                        <label for="batch-input">貼上單字列表 (每行一個單字，支援空白、逗號或 Tab 分隔)</label>
+                        <textarea id="batch-input" rows="5" placeholder="例如:&#10;Apple 蘋果&#10;Banana, 香蕉&#10;Cat - 貓" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <span>批次加入字庫</span>
+                        <i class="fa-solid fa-file-import"></i>
+                    </button>
+                    <div id="batch-success-msg" class="success-msg hidden">成功加入 <span id="batch-count">0</span> 個單字！</div>
+                </form>
+
+                <div class="card-header mt-8 dict-header">
+                    <h2><i class="fa-solid fa-list"></i> 我的字典 (<span id="word-count">0</span>)</h2>
+                    <div class="search-box">
+                        <i class="fa-solid fa-search"></i>
+                        <input type="text" id="search-input" placeholder="搜尋英文單字..." autocomplete="off">
+                    </div>
+                </div>
+                <div class="vocab-list-container">
+                    <ul id="vocab-list" class="vocab-list">
+                        <!-- Words will be injected here via JS -->
+                    </ul>
+                    <div id="empty-state" class="empty-state">
+                        <i class="fa-regular fa-folder-open"></i>
+                        <p>目前字典是空的，趕快新增單字吧！</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Column: Quiz Section -->
+            <section class="card quiz-section">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-graduation-cap"></i> 單字測驗</h2>
+                </div>
+                
+                <!-- Pre Quiz State -->
+                <div id="quiz-setup" class="quiz-setup">
+                    <div class="setup-illustration">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <p class="setup-desc">準備好挑戰自己了嗎？系統將從您的字典中隨機挑選單字進行測驗。</p>
+                    <div class="quiz-info warning hidden" id="quiz-warning">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <p>請至少新增 4 個單字才能進行選擇題測驗喔！</p>
+                    </div>
+                    <button id="start-quiz-btn" class="btn btn-accent" disabled>
+                        <span>開始測驗</span>
+                        <i class="fa-solid fa-play"></i>
+                    </button>
+                </div>
+
+                <!-- Active Quiz State -->
+                <div id="quiz-active" class="quiz-active hidden">
+                    <div class="quiz-header">
+                        <div class="progress-bar">
+                            <div id="progress-fill" class="progress-fill"></div>
+                        </div>
+                        <div class="quiz-stats">
+                            <span id="question-counter">題數: 1/10</span>
+                            <span id="score-counter">得分: 0</span>
+                        </div>
+                    </div>
+                    
+                    <div class="question-container">
+                        <h3 id="question-word" class="question-word">Vocabulary</h3>
+                        <p class="question-helper">請選擇正確的中文解釋</p>
+                    </div>
+
+                    <div id="options-container" class="options-container">
+                        <!-- Options injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Quiz Results State -->
+                <div id="quiz-result" class="quiz-result hidden">
+                    <div class="result-icon">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <h3 class="result-title">測驗完成！</h3>
+                    <div class="score-display">
+                        <span class="score-value" id="final-score">80</span>
+                        <span class="score-total">/ 100</span>
+                    </div>
+                    <p id="result-message" class="result-message">表現不錯，繼續保持！</p>
+                    <button id="retry-btn" class="btn btn-outline">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>再測一次</span>
+                    </button>
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
